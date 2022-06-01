@@ -1,11 +1,9 @@
 # Run this app with `python app.py` and
 # visit http://127.0.0.1:8050/ in your web browser.
 
-# assume you have a 'long-form' data frame
-# see https://plotly.com/python/px-arguments/ for more options
-
 # continent data obtained from https://www.geonames.org/countries/
 # logistic data for countries obtained from https://databank.worldbank.org/source/logistics-performance-index-(lpi)/Type/TABLE/preview/on#
+# more information about the Logistics Performance Index (LPI) available on: https://lpi.worldbank.org/about
 
 from cmath import nan
 from pydoc import visiblename
@@ -13,7 +11,7 @@ from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import pandas as pd
 
-app = Dash(__name__)
+app = Dash(__name__, title='Logistic Data Visualization')   
 
 # Load logistic and continent data
 continents = pd.read_csv('continents.csv', delimiter=';', na_filter=False)
@@ -39,8 +37,6 @@ logistic_data = pd.DataFrame(logistic_values.values, columns=countries)
 
 # Dash app
 app.layout = html.Div(children=[
-    html.H1(children='Logistic Data Visualization'),
-
     html.Div(children='''
         Sorted by country and/or continent.
     '''),
@@ -49,7 +45,11 @@ app.layout = html.Div(children=[
     html.Div(children=[
         dcc.Graph(
             id='logistics-graph',
-            style={'width': '80%', 'height': '75vh', 'display': 'inline-block'}
+            config={'showTips':True},
+            style={'width': '80%', 
+                   'vertical-align': 'middle', 
+                   'height': '75vh', 
+                   'display': 'inline-block'},
             ),
 
         dcc.Checklist(
@@ -57,14 +57,17 @@ app.layout = html.Div(children=[
             options=['Africa', 'North America', 'South America', 'Asia', 'Europe', 'Oceania'],
             value=['North America'],
             labelStyle = {'display': 'block'},
-            style={'width': '19%', 'vertical-align': 'top', 'display': 'inline-block'}
+            style={'width': '19%', 
+                   'vertical-align': 'middle', 
+                   'display': 'inline-block'}
             )
     ]),
 
     html.Div(children=
         dcc.Dropdown(
             id='country-dropdown',
-            multi=True
+            multi=True,
+            value=['Canada', 'United States']
         )
     )
 ])
@@ -85,12 +88,19 @@ def update_graph(countries):
         shown_countries = countries
     else:
         shown_countries = []
-    fig = px.line(logistic_data[shown_countries], 
-                  x=dates, 
-                  y=logistic_data[shown_countries].columns[:], 
-                  markers=True)
+    fig = px.line(
+                  logistic_data[shown_countries], 
+                  x=dates,
+                  y=logistic_data[shown_countries].columns[:],
+                  labels={'x':'Year', 
+                          'value':'Logistics Performance Index (LPI)',
+                          'variable':'Country'},
+                  markers=True,
+                  template='plotly_white'
+                  )
+    fig.update_layout({'plot_bgcolor':'rgb(226, 238, 237)', 'paper_bgcolor':'rgb(226, 238, 237)'})
     return fig
 
 # Run Dash app
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False) #Switch to True for more details about the app
