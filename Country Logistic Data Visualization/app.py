@@ -37,38 +37,47 @@ logistic_data = pd.DataFrame(logistic_values.values, columns=countries)
 
 # Dash app
 app.layout = html.Div(children=[
-    html.Div(children='''
-        Sorted by country and/or continent.
-    '''),
+    html.Div(children=
+        '''Country Logistic Data Viewer''',
+        style={'padding-top': '1vh',
+               'padding-bottom': '2vh',
+               'font-size': '6vh',
+               'font-weight': 'bold',
+               'text-align': 'center'}
+        ),
 
     # Interactive plot and filters
     html.Div(children=[
+        dcc.Dropdown(
+            id='country-dropdown',
+            multi=True,
+            value=['Canada', 'United States'],
+            style={'padding': '1vh'}
+        ),
+
         dcc.Graph(
             id='logistics-graph',
             config={'showTips':True},
-            style={'width': '80%', 
+            style={'width': '85%', 
                    'vertical-align': 'middle', 
                    'height': '75vh', 
-                   'display': 'inline-block'},
-            ),
+                   'display': 'inline-block'}
+        ),
 
         dcc.Checklist(
             id='continent-checklist',
             options=['Africa', 'North America', 'South America', 'Asia', 'Europe', 'Oceania'],
             value=['North America'],
             labelStyle = {'display': 'block'},
-            style={'width': '19%', 
-                   'vertical-align': 'middle', 
+            style={'width': '14%', 
+                   'vertical-align': 'top', 
                    'display': 'inline-block'}
-            )
-    ]),
-
-    html.Div(children=
-        dcc.Dropdown(
-            id='country-dropdown',
-            multi=True,
-            value=['Canada', 'United States']
         )
+    ],
+        style={'backgroundColor':'white',
+               'border': '2px solid black', 
+               'borderRadius': '15px', 
+               'overflow': 'hidden'}
     )
 ])
 
@@ -98,7 +107,7 @@ def update_graph(countries):
                   markers=True,
                   template='plotly_white'
                   )
-    fig.update_layout({'plot_bgcolor':'rgb(226, 238, 237)', 'paper_bgcolor':'rgb(226, 238, 237)'})
+    fig.update_layout({'plot_bgcolor':'white', 'paper_bgcolor':'white'})
     return fig
 
 # Run Dash app
